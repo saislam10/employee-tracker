@@ -28,7 +28,7 @@ const init = () => {
     { name: 'Update Employee Role', value: {} },
     { name: 'View All Roles', value: {} },
     { name: 'Add Role', value: {} },
-    { name: 'View All Departments', value: { department: 1 } },
+    { name: 'View All Departments', value: {} },
     { name: 'Add Departments', value: {} },
     { name: 'Exit', value: 'exit' },
   ];
