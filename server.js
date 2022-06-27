@@ -108,11 +108,26 @@ const addDept = () => {
   });
 }
 
+const updateRole = () => {
+  inquirer.prompt({
+    type: 'input',
+    name: 'updateRole',
+    message: 'What is the id of the role you would like to update the employee to?'
+  }).then(function (answer) {
+    db.query('INSERT INTO role (department_id) VALUES (?)', [answer.updateRole], function (err, res) {
+      if (err) throw err;
+      console.log(res)
+      init();
+    });
+  });
+}
+
+
 const init = () => {
   const choices = [
     { name: 'View All Employees', value: { allEmployees } },
     { name: 'Add Employee', value: { addEmployee }, },
-    { name: 'Update Employee Role', value: {} },
+    { name: 'Update Employee Role', value: { updateRole } },
     { name: 'View All Roles', value: { allRoles } },
     { name: 'Add Role', value: { addRole } },
     { name: 'View All Departments', value: { allDepartments } },
@@ -127,7 +142,7 @@ const init = () => {
       message: 'What what you like to do?',
       choices,
     }
-  ]).then((answers) => fn(answers.query));
+  ]).then((answers) => (answers.query));
 };
 
 init();
