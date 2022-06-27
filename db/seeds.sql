@@ -16,14 +16,14 @@ VALUES ("Sales Lead", 1, 100000),
        ("Legal Team Lead", 4, 250000),
        ("Lawyer", 4, 190000);
 
-INSERT INTO department (first_name, last_name, title, department_id, role_id, manager_id)
-VALUES ("John", "Doe", "Sales Lead", 1, 1, NULL),
-       ("Mike", "Chan", "Salesperson", 1, 2, 1),
-       ("Ashley", "Rodgriguez", "Lead Engineer", 2, 3, NULL),
-       ("Kevin", "Tupik", "Software Engineer", 2, 4, 3),
-       ("Kunal", "Singh", "Account Manager", 3, 5, NULL),
-       ("Malia", "Brown", "Accountant", 3, 6, 5),
-       ("Sarah", "Lourd", "Legal Team Lead", 4, 7, NULL),
-       ("Tom", "Allen", "Lawyer", 4, 8, 7),
+INSERT INTO employee (first_name, last_name, role_id, manager_id)
+VALUES ("John", "Doe", 1, NULL),
+       ("Mike", "Chan", 2, 1),
+       ("Ashley", "Rodgriguez", 3, NULL),
+       ("Kevin", "Tupik", 4, 3),
+       ("Kunal", "Singh", 5, NULL),
+       ("Malia", "Brown", 6, 5),
+       ("Sarah", "Lourd", 7, NULL),
+       ("Tom", "Allen", 8, 7),
        
        
