@@ -47,7 +47,7 @@ const addEmployee = () => {
     })).filter(e => e);
     db.query('SELECT role.id, role.title, department.name AS department, role.salary FROM role LEFT JOIN department ON role.department_id=department.id', function (err, results) {
       if (err) return console.error(err);
-      const roleChoices = results.map(({ id, title }) => ({
+      const roleChoices1 = results.map(({ id, title }) => ({
         name: title,
         value: id
       }));
@@ -66,7 +66,7 @@ const addEmployee = () => {
           type: 'list',
           name: 'employeeRoleId',
           message: 'What is the role of the employee?',
-          choices: roleChoices
+          choices: roleChoices1
         },
         {
           type: 'list',
@@ -88,7 +88,6 @@ const addEmployee = () => {
 const addRole = () => {
   db.query('SELECT * FROM department', function (err, results) {
     if (err) return console.error(err);
-    console.log(results);
     const deptChoices = results.map(({ id, name }) => ({
       name: name,
       value: id
@@ -113,7 +112,6 @@ const addRole = () => {
     ]).then(function (answer) {
       db.query("INSERT INTO role (title, department_id, salary) VALUES (?,?,?)", [answer.roleName, answer.roleDeptId, answer.roleSalary], function (err, res) {
         if (err) throw err;
-        console.table(res);
         init();
       });
     });
@@ -128,14 +126,13 @@ const addDepartment = () => {
   }).then(function (answer) {
     db.query('INSERT INTO department (name) VALUES (?)', [answer.departmentName], function (err, res) {
       if (err) throw err;
-      console.table(res)
       init();
     });
   });
 }
 
 const updateRole = () => {
-  db.query('SELECT employee.id, CONCAT(employee.first_name, employee.last_name) AS employee, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, " ", manager.last_name) AS manager FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee manager ON manager.id = employee.manager_id', function (err, res) {
+  db.query('SELECT employee.id, CONCAT(employee.first_name, " ", employee.last_name) AS employee, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, " ", manager.last_name) AS manager FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee manager ON manager.id = employee.manager_id', function (err, res) {
     if (err) return console.error(err);
     const employeeChoices = res.map(({ id, employee }) => ({
       name: employee,
@@ -147,12 +144,13 @@ const updateRole = () => {
         name: title,
         value: id
       }));
-      inquirer.prompt({
-        type: 'list',
-        name: 'updateEmployee',
-        message: 'Who would you like to update?',
-        choices: employeeChoices
-      },
+      inquirer.prompt(
+        {
+          type: 'list',
+          name: 'updateEmployee',
+          message: 'Who would you like to update?',
+          choices: employeeChoices
+        },
         {
           type: 'list',
           name: 'updateRole',
@@ -161,7 +159,6 @@ const updateRole = () => {
         }).then(function (answer) {
           db.query('UPDATE employee SET role_id=? WHERE id=?', [answer.updateRole, answer.updateEmployee], function (err, res) {
             if (err) throw err;
-            console.table(res)
             init();
           });
         });
