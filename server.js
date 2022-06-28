@@ -39,7 +39,7 @@ const allDepartments = () => {
 }
 
 const addEmployee = () => {
-  inquirer.prompt(
+  inquirer.prompt([
     {
       type: 'input',
       name: 'employeeFirstName',
@@ -60,16 +60,16 @@ const addEmployee = () => {
       name: 'employeeManagerId',
       message: 'What is the manager id of the employee?'
     }
-  ).then(function (answer) {
-    db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)', [answer.employeeFirstName, answer.employeeLastName, answer.employeeRoleId, answer.employeeManagerId], function (err, res) {
+  ]).then(function (answer) {
+    db.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)", [answer.employeeFirstName, answer.employeeLastName, answer.employeeRoleId, answer.employeeManagerId], function (err, res) {
       if (err) throw err;
-      console.log(res)
+      console.table(res);
       init();
     });
   });
 }
 const addRole = () => {
-  inquirer.prompt(
+  inquirer.prompt([
     {
       type: 'input',
       name: 'roleName',
@@ -85,16 +85,16 @@ const addRole = () => {
       name: 'roleSalary',
       message: 'What is the salary of the role?'
     }
-  ).then(function (answer) {
-    db.query('INSERT INTO role (title, department_id, salary) VALUES (?,?,?)', [answer.roleName, answer.roleSalary, roleDeptId], function (err, res) {
+  ]).then(function (answer) {
+    db.query("INSERT INTO role (title, department_id, salary) VALUES (?,?,?)", [answer.roleName, answer.roleDeptId, answer.roleSalary], function (err, res) {
       if (err) throw err;
-      console.log(res)
+      console.table(res);
       init();
     });
   });
 }
 
-const addDept = () => {
+const addDepartment = () => {
   inquirer.prompt({
     type: 'input',
     name: 'departmentName',
@@ -102,37 +102,42 @@ const addDept = () => {
   }).then(function (answer) {
     db.query('INSERT INTO department (name) VALUES (?)', [answer.departmentName], function (err, res) {
       if (err) throw err;
-      console.log(res)
+      console.table(res)
       init();
     });
   });
 }
 
-const updateRole = () => {
-  inquirer.prompt({
-    type: 'input',
-    name: 'updateRole',
-    message: 'What is the id of the role you would like to update the employee to?'
-  }).then(function (answer) {
-    db.query('INSERT INTO role (department_id) VALUES (?)', [answer.updateRole], function (err, res) {
-      if (err) throw err;
-      console.log(res)
-      init();
-    });
-  });
-}
+// const updateRole = () => {
+//   inquirer.prompt({
+//     type: 'list',
+//     name: 'updateEmployee',
+//     message: 'Who would you like to update?'
+//   },
+//   {
+//     type: 'list',
+//     name: 'updateRole',
+//     message: 'What would you like to update their role to?'
+//   }).then(function (answer) {
+//     db.query('INSERT INTO role (department_id) VALUES (?)', [answer.updateRole], function (err, res) {
+//       if (err) throw err;
+//       console.table(res)
+//       init();
+//     });
+//   });
+// }
 
 
 const init = () => {
   const choices = [
-    { name: 'View All Employees', value: { allEmployees } },
-    { name: 'Add Employee', value: { addEmployee }, },
-    { name: 'Update Employee Role', value: { updateRole } },
-    { name: 'View All Roles', value: { allRoles } },
-    { name: 'Add Role', value: { addRole } },
-    { name: 'View All Departments', value: { allDepartments } },
-    { name: 'Add Departments', value: { addDept } },
-    { name: 'Exit', value: 'exit' },
+    'View All Employees',
+    'Add Employee',
+    'Update Employee Role',
+    'View All Roles',
+    'Add Role',
+    'View All Departments',
+    'Add Department',
+    'Exit',
   ];
 
   inquirer.prompt([
@@ -142,7 +147,17 @@ const init = () => {
       message: 'What what you like to do?',
       choices,
     }
-  ]).then((answers) => (answers.query));
+
+  ]).then(data => {
+    if (data.query === 'View All Employees') { allEmployees(); };
+    if (data.query === 'Add Employee') { addEmployee(); };
+    if (data.query === "Update Employee Role") { updateRole(); };
+    if (data.query === "View All Roles") { allRoles(); };
+    if (data.query === "Add Role") { addRole(); };
+    if (data.query === "View All Departments") { allDepartments(); };
+    if (data.query === "Add Department") { addDepartment(); };
+    if (data.query === "Exit") { db.end(); };
+
+})
 };
 
-init();
