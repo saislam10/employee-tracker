@@ -39,15 +39,16 @@ const allDepartments = () => {
 }
 
 const addEmployee = () => {
-  db.query('SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, " ", manager.last_name) AS manager FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee manager ON manager.id = employee.manager_id', function (err, res) {
+  db.query('SELECT employee.id, CONCAT(employee.first_name, " ", employee.last_name) AS employee, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, " ", manager.last_name) AS manager FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee manager ON manager.id = employee.manager_id', function (err, res) {
     if (err) return console.error(err);
-    const managerChoices = res.map(({ id, manager }) => ({
-      name: manager,
+    const employeeChoices = res.map(({ id, employee }) => ({
+      name: employee,
       value: id
     })).filter(e => e);
     db.query('SELECT role.id, role.title, department.name AS department, role.salary FROM role LEFT JOIN department ON role.department_id=department.id', function (err, results) {
       if (err) return console.error(err);
-      const roleChoices1 = results.map(({ id, title }) => ({
+      console.table(results);
+      const roleChoices = results.map(({ id, title }) => ({
         name: title,
         value: id
       }));
@@ -66,13 +67,14 @@ const addEmployee = () => {
           type: 'list',
           name: 'employeeRoleId',
           message: 'What is the role of the employee?',
-          choices: roleChoices1
+          choices: roleChoices
         },
         {
           type: 'list',
           name: 'employeeManagerId',
           message: 'Who is the manager of the employee?',
-          choices: managerChoices
+          choices: 
+            employeeChoices.concat({ name: 'No Manager', value: null }),
         }
       ]).then(function (answer) {
         db.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)", [answer.employeeFirstName, answer.employeeLastName, answer.employeeRoleId, answer.employeeManagerId], function (err, res) {
@@ -82,9 +84,9 @@ const addEmployee = () => {
         });
       });
     });
-
   });
 }
+
 const addRole = () => {
   db.query('SELECT * FROM department', function (err, results) {
     if (err) return console.error(err);
@@ -112,6 +114,7 @@ const addRole = () => {
     ]).then(function (answer) {
       db.query("INSERT INTO role (title, department_id, salary) VALUES (?,?,?)", [answer.roleName, answer.roleDeptId, answer.roleSalary], function (err, res) {
         if (err) throw err;
+        console.table(res);
         init();
       });
     });
@@ -119,13 +122,14 @@ const addRole = () => {
 }
 
 const addDepartment = () => {
-  inquirer.prompt({
+  inquirer.prompt([{
     type: 'input',
     name: 'departmentName',
     message: 'What is the name of the department you would like to add?'
-  }).then(function (answer) {
+  }]).then(function (answer) {
     db.query('INSERT INTO department (name) VALUES (?)', [answer.departmentName], function (err, res) {
       if (err) throw err;
+      console.table(res);
       init();
     });
   });
@@ -144,7 +148,7 @@ const updateRole = () => {
         name: title,
         value: id
       }));
-      inquirer.prompt(
+      inquirer.prompt([
         {
           type: 'list',
           name: 'updateEmployee',
@@ -156,16 +160,17 @@ const updateRole = () => {
           name: 'updateRole',
           message: 'What would you like to update their role to?',
           choices: roleChoices
-        }).then(function (answer) {
-          db.query('UPDATE employee SET role_id=? WHERE id=?', [answer.updateRole, answer.updateEmployee], function (err, res) {
-            if (err) throw err;
-            init();
-          });
+        },
+      ]).then(function (answer) {
+        db.query('UPDATE employee SET role_id = ? WHERE id = ?', [answer.updateRole, answer.updateEmployee], function (err, res) {
+          if (err) throw err;
+          console.table(res);
+          init();
         });
+      });
     });
   });
 }
-
 
 const init = () => {
   const choices = [
@@ -196,7 +201,6 @@ const init = () => {
     if (data.query === "View All Departments") { allDepartments(); };
     if (data.query === "Add Department") { addDepartment(); };
     if (data.query === "Exit") { db.end(); };
-
   })
 };
 
