@@ -111,27 +111,26 @@ const addDepartment = () => {
   });
 }
 
-// const updateRole = () => {
-// Array goes here
-//   inquirer.prompt({
-//     type: 'list',
-//     name: 'updateEmployee',
-//     message: 'Who would you like to update?'
-//     choices: array of employees goes here
-//   },
-//   {
-//     type: 'list',
-//     name: 'updateRole',
-//     message: 'What would you like to update their role to?'
-//     choices: array of roles goes here
-//   }).then(function (answer) {
-//     db.query(//'Update functionality here', function (err, res) {
-//       if (err) throw err;
-//       console.table(res)
-//       init();
-//     });
-//   });
-// }
+const updateRole = () => {
+  inquirer.prompt({
+    type: 'list',
+    name: 'updateEmployee',
+    message: 'Who would you like to update?'
+    // choices: array of employees goes here
+  },
+  {
+    type: 'list',
+    name: 'updateRole',
+    message: 'What would you like to update their role to?'
+    // choices: array of roles goes here
+  }).then(function (answer) {
+    db.query('UPDATE employee SET role_id=? WHERE id=?', [answer.updateRole, answer.updateEmployee], function (err, res) {
+      if (err) throw err;
+      console.table(res)
+      init();
+    });
+  });
+}
 
 
 const init = () => {
