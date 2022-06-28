@@ -51,14 +51,16 @@ const addEmployee = () => {
       message: 'What is the last name of the employee?'
     },
     {
-      type: 'input',
+      type: 'list',
       name: 'employeeRoleId',
-      message: 'What is the role id of the employee?'
+      message: 'What is the role of the employee?'
+      // choices: array of employees goes here
     },
     {
-      type: 'input',
+      type: 'list',
       name: 'employeeManagerId',
-      message: 'What is the manager id of the employee?'
+      message: 'Who is the manager of the employee?'
+      // choices: array of Managers goes here + a none option
     }
   ]).then(function (answer) {
     db.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)", [answer.employeeFirstName, answer.employeeLastName, answer.employeeRoleId, answer.employeeManagerId], function (err, res) {
@@ -73,12 +75,13 @@ const addRole = () => {
     {
       type: 'input',
       name: 'roleName',
-      message: 'What is the role you would like to add?'
+      message: 'What is the name of role you would like to add?'
     },
     {
-      type: 'input',
+      type: 'list',
       name: 'roleDeptId',
-      message: 'What is the department id?'
+      message: 'What is the department name?'
+      // choices: array of departments goes here
     },
     {
       type: 'input',
@@ -109,18 +112,20 @@ const addDepartment = () => {
 }
 
 // const updateRole = () => {
-
+// Array goes here
 //   inquirer.prompt({
 //     type: 'list',
 //     name: 'updateEmployee',
 //     message: 'Who would you like to update?'
+//     choices: array of employees goes here
 //   },
 //   {
 //     type: 'list',
 //     name: 'updateRole',
 //     message: 'What would you like to update their role to?'
+//     choices: array of roles goes here
 //   }).then(function (answer) {
-//     db.query('INSERT INTO role (department_id) VALUES (?)', [answer.updateRole], function (err, res) {
+//     db.query(//'Update functionality here', function (err, res) {
 //       if (err) throw err;
 //       console.table(res)
 //       init();
@@ -159,6 +164,6 @@ const init = () => {
     if (data.query === "Add Department") { addDepartment(); };
     if (data.query === "Exit") { db.end(); };
 
-})
+  })
 };
 
